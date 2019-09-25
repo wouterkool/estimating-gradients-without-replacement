@@ -1,2 +1,1 @@
-# potential-octo-potato
-It's in the name
+Code for: Estimating Gradients for Discrete Random Variables by Sampling without Replacement.
