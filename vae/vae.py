@@ -5,8 +5,8 @@ import os
 import pickle
 import argparse
 from tqdm import tqdm
-from beam_search import beam_search
-from gumbel import compute_log_R_O_nfac, log1mexp
+from lib.beam_search import beam_search
+from lib.gumbel import compute_log_R_O_nfac, log1mexp
 import urllib
 
 slim = tf.contrib.slim
