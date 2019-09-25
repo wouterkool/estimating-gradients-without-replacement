@@ -170,18 +170,7 @@ def compute_log_R_O_nfac(log_p, so_perms=None):
     # Whereas we can just compute an exact gradient by setting
     # We choose this where the probability mass > 1 - 1e-5, so approx logprob > -1e-5
     is_exact = log_p.logsumexp(-1) > -1e-5
-    #
-    # check_log_P = torch.stack([log_pS_Onfac_rec(lp) for lp in log_p], -1)
-    # print("CHECK", log_P, check_log_P)
-    # print(torch.nonzero((((log_P - check_log_P).abs() < 1e-3) | is_exact) == 0))
-    #
-    # if not (((log_P - check_log_P).abs() < 1e-3) | is_exact).all():
-    #     import time
-    #     # torch.save(log_p, 'debug_log_R_{}.pt'.format(time.strftime("%Y%m%dT%H%M%S")))
-    #     print("WARNING RATIO CHECK NOT SATISFIED")
-    #
-    # # assert ((log_P - check_log_P).abs() < 1e-3).all()
-
+    
     log_R1 = log_P1s - log_P[..., None]
     log_R2 = log_P2s - log_P1s[..., None]
 
