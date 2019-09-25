@@ -1,1 +1,2 @@
 Code for: Estimating Gradients for Discrete Random Variables by Sampling without Replacement.
+The Bernoulli gradient variance experiment is in PyTorch while the vae experiment is in TensorFlow, so this repository provides implementations for both. 
