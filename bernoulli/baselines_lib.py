@@ -148,6 +148,42 @@ def reinforce_w_double_sample_baseline(\
     return get_reinforce_grad_sample(conditional_loss_fun_i,
                     log_class_weights_i, baseline) + conditional_loss_fun_i
 
+def stratified(conditional_loss_fun, log_class_weights,
+                class_weights_detached, seq_tensor,
+                z_sample, epoch, data, n_samples = 1, systematic=False):
+    # z_sample should be a vector of categories, but is ignored as this function samples itself
+    # conditional_loss_fun is a function that takes in a one hot encoding
+    # of z and returns the loss
+
+    assert len(z_sample) == log_class_weights.shape[0]
+
+    cum_p = class_weights_detached.cumsum(-1)
+    cum_p = cum_p / cum_p[:, -1, None]  # Normalize
+
+    def stratified_sample(cum_p, i, k, u=None):
+        assert i < k
+        if u is None:
+            u = torch.rand(cum_p.size(0))
+        us = ((i + u) / k)
+        return (us >= cum_p).sum(-1)
+
+    u = torch.rand(cum_p.size(0)) if systematic else None  # Common random numbers if systematic sampling
+
+    # Sample with replacement
+    ind = torch.stack([stratified_sample(cum_p, i, n_samples, u) for i in range(n_samples)], -1)
+
+    log_p = log_class_weights.gather(-1, ind)
+    n_classes = log_class_weights.shape[1]
+    costs = torch.stack([
+        conditional_loss_fun(get_one_hot_encoding_from_int(z_sample, n_classes))
+        for z_sample in ind.t()
+    ], -1)
+
+    adv = costs
+
+    # Add the costs in case there is a direct dependency on the parameters
+    return (adv.detach() * log_p + costs).mean(-1)
+
 def reinforce_wr(conditional_loss_fun, log_class_weights,
                 class_weights_detached, seq_tensor,
                 z_sample, epoch, data, n_samples = 1,
