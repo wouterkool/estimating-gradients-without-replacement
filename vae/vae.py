@@ -27,6 +27,7 @@ parser.add_argument('--pb', action='store_true', help='Display progress bar')
 parser.add_argument('--single_optimizer', action='store_true')
 parser.add_argument('--log_variance', action='store_true')
 parser.add_argument('--add_direct_gradient', action='store_true')
+parser.add_argument('--sample_kl', action='store_true')
 parser.add_argument('--num_categories', type=int, default=10)
 parser.add_argument('--num_dimensions', type=int, default=20)
 parser.add_argument('--larochelle', action='store_true', help='Use Hugo Larochelle\'s binary mnist data ')
@@ -54,6 +55,8 @@ N = args.num_dimensions
 directory = os.getcwd() + f'/discrete_out_vae_new/{K}^{N}/'
 if args.larochelle:
     directory = directory + 'larochelle/'
+if args.sample_kl:
+    directory = directory + 'sample_kl/'
 if not os.path.exists(directory):
     os.makedirs(directory)
 batch_size = 200
@@ -140,7 +143,17 @@ def bernoulli_loglikelihood(b, log_alpha):
     return b * (-tf.nn.softplus(-log_alpha)) + (1 - b) * (-log_alpha - tf.nn.softplus(-log_alpha))
 
 
-def fun(x_star, E, logits_y, reuse_decoder=True):
+def categorical_loglikelihood(b, logits):
+    '''
+    b is N*n_cv*n_class, one-hot vector in row
+    logits is N*n_cv*n_class, softmax(logits) is prob
+    return: N*n_cv
+    '''
+    lik_v = b*(logits-tf.reduce_logsumexp(logits,axis=-1,keep_dims=True))
+    return tf.reduce_sum(lik_v,axis=-1)
+
+
+def fun(x_star, E, logits_y, sample_kl=False, reuse_decoder=True):
     '''
     x_star is N*d_x, E is N* (n_cv*n_class), z_concate is N*n_cv*n_class
     prior_logit0 is n_cv*n_class
@@ -151,7 +164,13 @@ def fun(x_star, E, logits_y, reuse_decoder=True):
 
     logits_py = tf.ones_like(logits_y) * 1. / K  # uniform
     # (bs)
-    KL = kl_cat(logits_y, logits_py)
+    if sample_kl:
+        E_ = tf.reshape(E, logits_py.shape)  # Unflatten
+        log_p_z = tf.reduce_sum(categorical_loglikelihood(E_, logits_py), axis=1)
+        log_q_z_given_x = tf.reduce_sum(categorical_loglikelihood(E_, logits_y), axis=1)
+        KL = log_q_z_given_x - log_p_z
+    else:
+        KL = kl_cat(logits_y, logits_py)
 
     # log p(x_star|E)
     logit_x = decoder(E, x_dim, reuse=reuse_decoder)
@@ -209,7 +228,7 @@ y_sample = tf.cast(tf.one_hot(y_sample_,depth=K) ,tf.float32)
 
 y_flat = slim.flatten(y_sample)
 
-
+# For evaluation, we compute analytical KL, otherwise we cannot compare
 eval_neg_elbo = fun(x, y_flat, logits_y, reuse_decoder=False)
 
 eval_costs = tf.reduce_mean(eval_neg_elbo)
@@ -228,7 +247,7 @@ if args.estimator in ('gs', 'stgs'):
         y = tf.stop_gradient(y_hard - y) + y
     net = slim.flatten(y)
 
-    neg_elbo = fun(x, net, logits_y)
+    neg_elbo = fun(x, net, logits_y, args.sample_kl)
 
     train_costs = tf.reduce_mean(neg_elbo)
     loss = train_costs
@@ -250,10 +269,14 @@ if args.estimator not in ('gs', 'stgs', 'arsm') or args.log_variance:
 
         logq = tf.reduce_sum(tf.reduce_sum(y_sample*log_p_y,-1),-1)
 
-        #bs
+
+        if args.sample_kl:
+            train_neg_elbo = fun(x,y_flat,logits_y, args.sample_kl, reuse_decoder=True)
+        else:
+            train_neg_elbo = eval_neg_elbo  # We can reuse it
+
         if args.estimator == 'reinforce' or args.log_variance:
-            F = eval_neg_elbo # fun(x,y_flat,logits_y,reuse_decoder=True) #to minimize
-            inf_loss = tf.reduce_mean(tf.stop_gradient(F)*logq)
+            inf_loss = tf.reduce_mean(tf.stop_gradient(train_neg_elbo)*logq)
 
             losses['reinforce'] = (gen_loss, inf_loss)
 
@@ -263,9 +286,9 @@ if args.estimator not in ('gs', 'stgs', 'arsm') or args.log_variance:
 
             y_flat_bl = slim.flatten(y_sample_bl)
 
-            bl = fun(x, y_flat_bl, logits_y, reuse_decoder=True)
+            bl = fun(x, y_flat_bl, logits_y, args.sample_kl, reuse_decoder=True)
 
-            inf_loss = tf.reduce_mean(tf.stop_gradient(eval_neg_elbo - bl) * logq)
+            inf_loss = tf.reduce_mean(tf.stop_gradient(train_neg_elbo - bl) * logq)
 
             losses['reinforce_bl'] = (gen_loss, inf_loss)
 
@@ -297,7 +320,7 @@ if args.estimator not in ('gs', 'stgs', 'arsm') or args.log_variance:
         z_flat = slim.flatten(z)
         z_tilde_flat = slim.flatten(z_tilde)
         # bs
-        F = fun(x, b_flat, logits_y, reuse_decoder=True)  # to minimize
+        F = fun(x, b_flat, logits_y, args.sample_kl, reuse_decoder=True)  # to minimize
 
         def cv(b, reuse=False):
             # return control_variates
@@ -346,7 +369,7 @@ if args.estimator not in ('gs', 'stgs', 'arsm') or args.log_variance:
 
         avgprob = tf.reduce_mean(tf.reduce_sum(y_sample_tile * theta, -1) + eps)
 
-        neg_elbo = fun(tf.tile(x, [n_samp, 1]), y_flat_tile, logits_y_tile)
+        neg_elbo = fun(tf.tile(x, [n_samp, 1]), y_flat_tile, logits_y_tile, args.sample_kl)
         train_costs = tf.reduce_mean(neg_elbo)
         gen_loss = train_costs
 
@@ -367,7 +390,7 @@ if args.estimator not in ('gs', 'stgs', 'arsm') or args.log_variance:
 
         sample_flat = tf.reshape(tf.transpose(tf.one_hot(sample, depth=K), perm=[1, 0, 2, 3]), [-1, N * K])
 
-        neg_elbo_all = fun(tf.tile(x, [n_samp, 1]), sample_flat, tf.tile(log_p_y, [n_samp, 1, 1]))
+        neg_elbo_all = fun(tf.tile(x, [n_samp, 1]), sample_flat, tf.tile(log_p_y, [n_samp, 1, 1]), args.sample_kl)
         neg_elbo_samples = tf.transpose(tf.reshape(neg_elbo_all, [n_samp, -1]))
 
         if args.estimator == 'rf_unord' or args.log_variance:
@@ -483,6 +506,7 @@ if args.estimator not in ('gs', 'stgs', 'arsm') or args.log_variance:
                 flat_grads[name] = flat_grad
 
 if args.estimator == 'arsm' or args.log_variance:
+    assert args.log_variance or args.sample_kl, "ARSM should use sample_kl"
     train_costs = eval_costs
     gen_loss = train_costs
 
@@ -501,7 +525,7 @@ if args.estimator == 'arsm' or args.log_variance:
     EE = tf.placeholder(tf.float32, [None, N, K])
     EE_flat = slim.flatten(EE)
     # F_ij = funold(x_star_u,EE_flat,prior_logit0,z_concate,reuse_decoder= True)
-    F_ij = fun(x_star_u, EE_flat, logits_y, reuse_decoder=True)
+    F_ij = fun(x_star_u, EE_flat, logits_y, True, reuse_decoder=True)  # ARSM should always use sampled kl
 
     F = tf.placeholder(tf.float32, [None, K, K])  # n_class*n_class
     F0 = F - tf.reduce_mean(F, axis=2, keep_dims=True)
@@ -519,7 +543,8 @@ if args.estimator == 'arsm' or args.log_variance:
     inf_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='encoder')
 
     inf_grads = tf.gradients(logits_y_, inf_vars, grad_ys=alpha_grads)  # /b_s
-    if args.add_direct_gradient:  # Somehow this seems to make little difference for ARSM where it works for the other implementation
+    if False:  # Don't add direct gradient for ARSM, we use sampled KL
+    # if args.add_direct_gradient:  # Somehow this seems to make little difference for ARSM where it works for the other implementation
         dgen_dinf = tf.gradients(gen_loss, inf_vars)
         # inf_grads = [didi + dgdi for didi, dgdi in zip(inf_grads, dgen_dinf)]
         # Note: there are some None gradients because of adam optimizer auxiliary variables

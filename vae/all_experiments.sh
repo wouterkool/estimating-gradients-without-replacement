@@ -15,7 +15,7 @@ python vae.py --estimator rfwr --n_samples 4 --experiment_name directgradlogvar 
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 20
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 20
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 20
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 20
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 3e-4 --add_direct_gradient --num_dimensions 20 --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 20
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 20
@@ -30,7 +30,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad --lr 
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 2
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 2
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 2
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 2
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 3e-4 --add_direct_gradient --num_dimensions 2 --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 2
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 2
@@ -46,7 +46,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad --lr 
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 20 --larochelle
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 20 --larochelle
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 20 --larochelle
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 20 --larochelle
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 3e-4 --add_direct_gradient --num_dimensions 20 --larochelle --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 20 --larochelle
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 20 --larochelle
@@ -61,7 +61,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad --lr 
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 2 --larochelle
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 2 --larochelle
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 2 --larochelle
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 1e-4 --add_direct_gradient --num_dimensions 2 --larochelle
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad --lr 3e-4 --add_direct_gradient --num_dimensions 2 --larochelle --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 2 --larochelle
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad --lr 1e-3 --add_direct_gradient --num_dimensions 2 --larochelle
@@ -80,7 +80,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad --lr 
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 20
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 20
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 20
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 20
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 3e-4 --add_direct_gradient --num_dimensions 20 --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 20
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 20
@@ -95,7 +95,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad2 --lr
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 2
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 2
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 2
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 2
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 3e-4 --add_direct_gradient --num_dimensions 2 --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 2
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 2
@@ -111,7 +111,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad2 --lr
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 20 --larochelle
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 20 --larochelle
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 20 --larochelle
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 20 --larochelle
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 3e-4 --add_direct_gradient --num_dimensions 20 --larochelle --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 20 --larochelle
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 20 --larochelle
@@ -126,7 +126,7 @@ python vae.py --estimator sasbl --n_samples 8 --experiment_name directgrad2 --lr
 python vae.py --estimator stgs --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 2 --larochelle
 python vae.py --estimator relax --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 2 --larochelle
 python vae.py --estimator reinforce_bl --n_samples 1 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 2 --larochelle
-python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 1e-4 --add_direct_gradient --num_dimensions 2 --larochelle
+python vae.py --estimator arsm --n_samples 1 --experiment_name directgrad2 --lr 3e-4 --add_direct_gradient --num_dimensions 2 --larochelle --sample_kl
 
 python vae.py --estimator rfwr --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 2 --larochelle
 python vae.py --estimator rf_unord --n_samples 4 --experiment_name directgrad2 --lr 1e-3 --add_direct_gradient --num_dimensions 2 --larochelle
