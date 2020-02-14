@@ -1,6 +1,6 @@
 # Estimating Gradients for Discrete Random Variables by Sampling without Replacement
 
-This repository contains implementations of the *Unordered set estimator* as derived in our paper *Estimating Gradients for Discrete Random Variables by Sampling without Replacement*.
+This repository contains implementations of the *Unordered set estimator* as derived in our paper [Estimating Gradients for Discrete Random Variables by Sampling without Replacement](https://openreview.net/forum?id=rklEj2EFvB).
 
 * The [Bernoulli gradient variance experiment](bernoulli) is in PyTorch
 * The [Categorical VAE experiment](vae) is in TensorFlow
@@ -20,4 +20,4 @@ For more details, please see our paper [Estimating Gradients for Discrete Random
 ```
 
 ## Stochastic Beam Search
-For sampling without replacement from a fully factorized distribution for the VAE experiment, this code contains an implementation of [Stochastic Beam Search](https://arxiv.org/abs/1903.06059) in TensorFlow.
+For sampling without replacement from a fully factorized distribution for the VAE experiment, this code contains an implementation of [Stochastic Beam Search](https://arxiv.org/abs/1903.06059) in TensorFlow in [vae/lib/beam_search.py](vae/lib/beam_search.py).
